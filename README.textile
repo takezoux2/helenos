@@ -1,0 +1,60 @@
+h1. About
+
+Scala's Cassandra O/R mapper.
+
+h1. Quick start
+
+h2. 1. Install to local repository.
+
+You type on top directory.
+<pre>mvn install -Dmaven.test.skip=true</pre>
+
+h2. 2. Add dependency
+
+Add dependency to your pom.xml
+<pre>
+        <dependency>
+            <groupId>com.geishatokyo</groupId>
+            <artifactId>helenos_2.9.0</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+        </dependency>
+</pre>
+
+h2. 3. Sample code
+
+h3. 3.1 Using implicit conversions
+
+<pre>
+
+import com.geishatokyo.helenos.conversions.StandardPreDefs._
+import com.geishatokyo.helenos.column._
+
+// set up connections
+import com.geishatokyo.helenos.connection._
+Session.init("Your default keyspace name",new OneTimeSessionPool(new SimpleConnectionPool("localhost",9160)))
+
+// create keyspaces and column families
+import com.geishatokyo.helenos.crudify._
+
+Crudify.addColumnFamilies( CFDefinition.standardCF("Keyspace1","StandardColumnFamily") ,
+                           CFDefinition.superCF("Keyspace1","SuperColumnFamily")) // Keyspace1 is created automatically.
+
+
+// access standard columns
+
+"StandardColumnFamily" \ "Tom" \ "name" := "Tom"
+"StandardColumnFamily" \ "Tom" := List( "name" := "Bob",
+                                        "age" := 4)
+
+val name : String = "StandardColumnFamily" \ "Tom" \ "name" get
+val age : Int = "StandardColumnFamily" \ "Tom" \ "age" get
+val columns : Map[Array[Byte],Array[Byte]] = "StandardColumnFamily" \ "Tom" get
+
+
+// access super columns
+
+"StandardColumnFamily" \\ "School1" \ "Tom" \ "name" := "Tom"
+
+val name : String = "StandardColumnFamily" \\ "School1" \ "Tom" \ "name" get
+
+</pre>
