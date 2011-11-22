@@ -13,6 +13,7 @@ class OneTimeSessionPool(val pool : ConnectionPool) extends SessionPool{
 
   def this() = this(new SimpleConnectionPool)
 
+  var defaultKeyspace : Keyspace = new Keyspace("Keyspace1")
 
 
   def createSession(keyspace : String) = {
@@ -36,10 +37,22 @@ class OneTimeSessionPool(val pool : ConnectionPool) extends SessionPool{
 trait SessionPool {
   val logger = LoggerFactory.getLogger(classOf[SessionPool] )
 
-  val SessionNameForSystem = "System"
+  var defaultKeyspace : Keyspace
 
   def pool : ConnectionPool
 
+  /**
+   *
+   */
+  def borrow[T](keyspace : Option[Keyspace])(func: (Session) => T) : T = {
+    borrow(keyspace.getOrElse(defaultKeyspace).name)(func)
+  }
+  /**
+   * Get session which is set to passed keyspace
+   *
+   * @param keyspace Keyspace name to set
+   * @param func process function
+   */
   def borrow[T](keyspace : String)( func : Session => T) : T = {
     val session = createSession(keyspace)
     try{
@@ -49,6 +62,9 @@ trait SessionPool {
     }
   }
 
+  /**
+   * Get session which is not set keyspace.
+   */
   def systemBorrow[T](func : Session => T) : T = {
     val session = createSession()
     try{

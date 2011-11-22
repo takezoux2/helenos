@@ -11,7 +11,10 @@ import com.geishatokyo.helenos.column._
 
 trait ConvertTemplate[T] {
 
-  def convert(list : List[Column]) : T
+  def convert(CFKey : Array[Byte],
+              superColumnName: Option[Array[Byte]],
+              list : Map[Array[Byte],Array[Byte]]) : T
+  def convert( obj : T , list : Map[Array[Byte],Array[Byte]]) : T
   def deconvert( obj : T) : (ColumnContainer,List[Mutation])
 
 }

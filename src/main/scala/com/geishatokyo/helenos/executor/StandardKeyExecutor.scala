@@ -1,9 +1,17 @@
 package com.geishatokyo.helenos.executor
 
-import com.geishatokyo.helenos.connection.Session
 import com.geishatokyo.helenos.column._
 import com.geishatokyo.helenos.command.{GetSuperSlice, GetStandardSlice, BatchMutateSuper, BatchMutateStandard}
+import com.geishatokyo.helenos.connection.{SessionPool, Session}
 
+
+trait ColumnContainerExecutor{
+
+  implicit def columnsToMap( list : List[Column]) : Map[Array[Byte],Array[Byte]] = {
+    Map(list.map(col => col.name -> col.value) :_*)
+  }
+
+}
 
 /**
  * 
@@ -11,11 +19,11 @@ import com.geishatokyo.helenos.command.{GetSuperSlice, GetStandardSlice, BatchMu
  * Create: 11/11/11 0:50
  */
 
-class StandardKeyExecutor(standardKey : StandardKey) {
+class StandardKeyExecutor(standardKey : StandardKey)(implicit sessionPool: SessionPool) extends ColumnContainerExecutor{
 
   @inline
   private def session[T]( func : Session => T) : T = {
-    Session.borrow(standardKey.keyspace)(func)
+    sessionPool.borrow(standardKey.keyspace)(func)
   }
 
   def :=( mutations : List[Mutation]) = {
@@ -52,12 +60,12 @@ class StandardKeyExecutor(standardKey : StandardKey) {
 
 }
 
-class SuperColumnExecutor(superColumn : SuperColumn) {
+class SuperColumnExecutor(superColumn : SuperColumn)(implicit sessionPool: SessionPool) extends ColumnContainerExecutor {
 
 
   @inline
   private def session[T]( func : Session => T) : T = {
-    Session.borrow(superColumn.keyspace)(func)
+    sessionPool.borrow(superColumn.keyspace)(func)
   }
 
   def :=( mutations : List[Mutation]) = {

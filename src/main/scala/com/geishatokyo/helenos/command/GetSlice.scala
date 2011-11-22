@@ -3,7 +3,8 @@ package com.geishatokyo.helenos.command
 import com.geishatokyo.helenos.connection.Session
 import org.apache.cassandra.thrift.ConsistencyLevel
 import scala.collection.JavaConversions._
-import com.geishatokyo.helenos.column.{SuperKey, SuperColumn, Predicate, StandardKey}
+import com.geishatokyo.helenos.column._
+
 
 
 /**
@@ -12,40 +13,38 @@ import com.geishatokyo.helenos.column.{SuperKey, SuperColumn, Predicate, Standar
  * Create: 11/11/11 18:29
  */
 
-class GetStandardSlice( standardKey : StandardKey , predicate : Predicate) extends Command[Map[Array[Byte],Array[Byte]]] {
+class GetStandardSlice( standardKey : StandardKey , predicate : Predicate) extends Command[List[ColumnForStandard]] {
   def execute(session: Session, consistencyLevel: ConsistencyLevel) = {
     val results = session().get_slice(standardKey.key,
     toColumnParent(standardKey),
     toSlicePredicate(predicate),
     consistencyLevel)
 
-    if(results == null) Map()
+    if(results == null) Nil
     else{
-      Map(results.map(c => {
-        val col = columnOrSuperColumnToStandard(c)
-        col.name -> col.value
-      }) :_* )
+      results.map(c => {
+        columnOrSuperColumnToStandard(c)
+      }).toList
     }
   }
 }
 
-class GetSuperSlice( superColumn : SuperColumn , predicate : Predicate) extends Command[Map[Array[Byte],Array[Byte]]] {
+class GetSuperSlice( superColumn : SuperColumn , predicate : Predicate) extends Command[List[ColumnForSuper]] {
   def execute(session: Session, consistencyLevel: ConsistencyLevel) = {
     val results = session().get_slice(superColumn.key.key,
     toColumnParent(superColumn),
     toSlicePredicate(predicate),
     consistencyLevel)
 
-    if(results == null) Map()
+    if(results == null) Nil
     else{
-      Map(results.map(c => {
-        val col = columnOrSuperColumnToSuper(c)
-        col.name -> col.value
-      }) :_* )
+      results.map(c => {
+        columnOrSuperColumnToSuper(c)
+      }).toList
     }
   }
 }
-class GetSuperColumnsSlice( superKey : SuperKey , predicate : Predicate) extends Command[Map[Array[Byte],Map[Array[Byte],Array[Byte]]]] {
+class GetSuperColumnsSlice( superKey : SuperKey , predicate : Predicate) extends Command[Map[Array[Byte],List[ColumnForSuper]]] {
   def execute(session: Session, consistencyLevel: ConsistencyLevel) = {
     val results = session().get_slice(superKey.key,
     toColumnParent(superKey),
@@ -59,11 +58,11 @@ class GetSuperColumnsSlice( superKey : SuperKey , predicate : Predicate) extends
       Map(results.map( cos => {
         val cols = columnOrSuperColumnToSupers(cos)
         if(cols.size > 0){
-          cols(0).superColumnName -> Map[Array[Byte],Array[Byte]](cols.map( p => p.name -> p.value):_*)
+          cols(0).superColumnName -> cols.toList
         }else{
-          new Array[Byte](0) -> Map.empty
+          new Array[Byte](0) -> Nil
         }
-      }).toSeq.asInstanceOf[Seq[(Array[Byte], Map[Array[Byte],Array[Byte]])]] :_*)
+      }) :_*)
     }
   }
 }

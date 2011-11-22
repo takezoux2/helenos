@@ -11,7 +11,6 @@ import com.geishatokyo.helenos.connection.{Session, SessionPool, ConnectionPool}
  */
 
 object StandardPreDefs extends TypeConversions with ExecutorConversions{
-
-
+  def sessionPool = Session
 }
 

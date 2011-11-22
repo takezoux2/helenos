@@ -13,7 +13,8 @@ import com.geishatokyo.helenos.command.SetKeyspace
 object Session extends SessionPool{
   private var innerPool : SessionPool = new OneTimeSessionPool()
 
-  var defaultKeyspace : Keyspace = new Keyspace("Keyspace1")
+  def defaultKeyspace : Keyspace = innerPool.defaultKeyspace
+  def defaultKeyspace_=( ks : Keyspace) : Unit = innerPool.defaultKeyspace = ks
 
 
   def init( defKeyspace : String,  pool : SessionPool) = {
@@ -23,10 +24,6 @@ object Session extends SessionPool{
 
   def pool = innerPool.pool
 
-
-  def borrow[T](keyspace : Option[Keyspace])(func: (Session) => T) : T = {
-    borrow(keyspace.getOrElse(defaultKeyspace).name)(func)
-  }
 
   def createSession(keyspace : String) = innerPool.createSession(keyspace)
 

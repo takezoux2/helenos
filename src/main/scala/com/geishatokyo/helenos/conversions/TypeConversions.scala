@@ -10,7 +10,12 @@ import java.util.{UUID, Date}
  * User: takeshita
  * Create: 11/09/14 2:11
  */
+object TypeConversions extends TypeConversions
 
+
+/**
+ * Define type conversion methods
+ */
 trait TypeConversions{
 
 
@@ -69,6 +74,8 @@ trait TypeConversions{
 
   implicit def bytesToMutator(name : Array[Byte]) = new Mutator(name)
   implicit def strToMutator(name : String) = new Mutator(bytes(name))
+
+
 
 
 }
