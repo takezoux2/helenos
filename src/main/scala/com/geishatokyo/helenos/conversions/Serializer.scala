@@ -71,6 +71,30 @@ object UUIDSerializer extends Serializer[UUID] {
 
 }
 
+object FreeIntSerializer extends Serializer[Long] {
+  val bytesPerInt = java.lang.Integer.SIZE / java.lang.Byte.SIZE
+
+  def toBytes(i:Long) = {
+    if(Integer.MIN_VALUE < i && i < Integer.MAX_VALUE){
+      ByteBuffer.wrap(new Array[Byte](bytesPerInt)).putInt(i.toInt).array()
+    }else{
+      ByteBuffer.wrap(new Array[Byte](bytesPerInt * 2)).putLong(i).array()
+    }
+  }
+  def fromBytes(bytes:Array[Byte]) : Long = {
+    bytes.length match{
+      case 4 | 3 => ByteBuffer.wrap(bytes).getInt
+      case i if i > 4 && i <= 8 => ByteBuffer.wrap(bytes).getLong
+      case 1 => bytes(0)
+      case 2 => ByteBuffer.wrap(bytes).getShort
+      case 0 => 0
+      case _ => ByteBuffer.wrap(bytes).getLong
+    }
+  }
+  def toString(obj:Long) = obj.toString
+  def fromString(str:String) = str.toLong
+}
+
 object IntSerializer extends Serializer[Int] {
   val bytesPerInt = java.lang.Integer.SIZE / java.lang.Byte.SIZE
 

@@ -1,8 +1,10 @@
 package com.geishatokyo.helenos
 
+import column.{CFDefinition, KeyspaceDefinition}
 import command.DescribeKeyspace
 import connection.{SimpleConnectionPool, OneTimeSessionPool, Session, ConnectionPool}
 import conversions.StandardPreDefs
+import crudify.Crudify
 import org.junit.runner.RunWith
 import org.specs.Specification
 import org.specs.runner.{JUnit, JUnitSuiteRunner}
@@ -30,6 +32,10 @@ class ReadTest extends Specification with JUnit{
   import StandardPreDefs._
 
   "insert" should{
+
+    doFirst{
+      Crudify.addColumnFamilies(CFDefinition.standardCF("Keyspace1","Standard1"))
+    }
 
 
     "insert" in {

@@ -59,6 +59,14 @@ trait TypeConversions{
   implicit def int(bytes:Array[Byte]):Int = IntSerializer.fromBytes(bytes)
   implicit def string(i:Int) = IntSerializer.toString(i)
 
+  implicit def bytes(l:Short):Array[Byte] = FreeIntSerializer.toBytes(l)
+  implicit def short(bytes:Array[Byte]) : Short = FreeIntSerializer.fromBytes(bytes).toShort
+  implicit def string(l:Short):String = FreeIntSerializer.toString(l)
+
+  implicit def bytes(l:Byte):Array[Byte] = FreeIntSerializer.toBytes(l)
+  implicit def byte(bytes:Array[Byte]) : Byte = FreeIntSerializer.fromBytes(bytes).toByte
+  implicit def string(l:Byte):String = FreeIntSerializer.toString(l)
+
   implicit def bytes(str:String):Array[Byte] = StringSerializer.toBytes(str)
   implicit def string(bytes:Array[Byte]):String = StringSerializer.fromBytes(bytes)
 

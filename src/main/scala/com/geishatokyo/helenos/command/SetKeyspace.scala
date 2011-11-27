@@ -1,6 +1,8 @@
 package com.geishatokyo.helenos.command
 
 import com.geishatokyo.helenos.connection.Session
+import com.geishatokyo.helenos.CassandraException
+import org.apache.cassandra.thrift.InvalidRequestException
 
 /**
  * 
@@ -14,3 +16,4 @@ class SetKeyspace(keyspace :String) extends SystemCommand[Unit] {
     session().set_keyspace(keyspace)
   }
 }
+

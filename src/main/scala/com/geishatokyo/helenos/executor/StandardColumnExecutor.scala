@@ -14,7 +14,7 @@ import com.geishatokyo.helenos.connection.{SessionPool, Session, ConnectionPool}
 class StandardColumnExecutor(_column : ColumnNameForStandard)(implicit sessionPool: SessionPool) extends ColumnExecutor[ColumnNameForStandard](_column){
 
   protected def _get = {
-    val command = new GetStandardColumn(column)
+    val command = new GetColumn(column)
     sessionPool.borrow(column.keyspace)(session => {
       command.execute(session)
     })

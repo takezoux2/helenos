@@ -1,8 +1,8 @@
 package com.geishatokyo.helenos.executor
 
 import com.geishatokyo.helenos.column.ColumnNameForSuper
-import com.geishatokyo.helenos.command.GetSuperColumn
 import com.geishatokyo.helenos.connection.{SessionPool, Session}
+import com.geishatokyo.helenos.command.{GetColumn}
 
 /**
  * 
@@ -15,7 +15,7 @@ class ColumnForSuperExecutor(_column : ColumnNameForSuper)(implicit sessionPool:
 
   protected def _get = {
     sessionPool.borrow(_column.keyspace)(session => {
-      new GetSuperColumn(_column).execute(session)
+      new GetColumn(_column).execute(session)
     })
   }
 
