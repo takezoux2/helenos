@@ -9,7 +9,7 @@ import java.lang.reflect.Method
  * Create: 11/11/14 17:25
  */
 
-trait FieldTemplate[T] {
+trait FieldCoder[T] {
 
   def columnName : Array[Byte]
   def method : Method
